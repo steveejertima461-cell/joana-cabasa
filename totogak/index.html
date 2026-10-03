@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flowers For You</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body {
+      min-height: 100vh;
+      background: radial-gradient(ellipse at bottom, #1b1b36 0%, #080816 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Poppins', sans-serif;
+      overflow: hidden;
+      color: #fff;
+      position: relative;
+    }
+
+    /* Ambient Night Sky */
+    .stars {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .star {
+      position: absolute;
+      background: #ffffff;
+      border-radius: 50%;
+      animation: twinkle var(--duration, 3s) infinite ease-in-out;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.15; transform: scale(0.8); }
+      50% { opacity: 0.95; transform: scale(1.3); }
+    }
+
+    .moon {
+      position: absolute;
+      top: 36px;
+      right: 48px;
+      width: 58px;
+      height: 58px;
+      background: radial-gradient(circle at 35% 35%, #ffffff 0%, #fef3c7 70%, #fde68a 100%);
+      border-radius: 50%;
+      box-shadow: 0 0 35px rgba(254, 243, 199, 0.75), 0 0 70px rgba(254, 243, 199, 0.35);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .moon::after {
+      content: '';
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      top: 15px;
+      left: 28px;
+      background: rgba(220, 205, 160, 0.35);
+      border-radius: 50%;
+      filter: blur(1.5px);
+    }
+
+    /* Falling Floating Rose Petals Container */
+    .falling-petals-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 2;
+    }
+
+    .drifting-petal {
+      position: absolute;
+      top: -30px;
+      width: 16px;
+      height: 22px;
+      background: radial-gradient(circle at 40% 30%, #fb7185 0%, #e11d48 60%, #880825 100%);
+      border-radius: 50% 50% 35% 35% / 60% 60% 40% 40%;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      opacity: 0.85;
+      animation: driftDown var(--fall-duration, 8s) linear infinite;
+    }
+
+    @keyframes driftDown {
+      0% {
+        transform: translateY(-30px) rotate(0deg) scale(0.8);
+        opacity: 0;
+      }
+      10% { opacity: 0.9; }
+      90% { opacity: 0.8; }
+      100% {
+        transform: translateY(105vh) rotate(360deg) translateX(var(--drift-x, 40px)) scale(1.1);
+        opacity: 0;
+      }
+    }
+
+    /* Title */
+    .title {
+      position: absolute;
+      top: 36px;
+      font-size: 2.6rem;
+      font-family: 'Great Vibes', cursive;
+      letter-spacing: 2px;
+      color: #ffe4e6;
+      text-shadow: 0 0 15px rgba(251, 113, 133, 0.7), 0 0 30px rgba(225, 29, 72, 0.4);
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: opacity 1.2s ease, transform 1.2s ease;
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .title.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Initial Heart Screen */
+    .heart-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      transition: opacity 0.8s ease, transform 0.8s ease;
+      z-index: 20;
+    }
+
+    .tap-text {
+      font-size: 1.35rem;
+      font-weight: 600;
+      letter-spacing: 4px;
+      margin-bottom: 24px;
+      text-transform: uppercase;
+      color: #fbcfe8;
+      text-shadow: 0 0 15px rgba(244, 114, 182, 0.8);
+      animation: pulseText 1.6s infinite alternate ease-in-out;
+    }
+
+    @keyframes pulseText {
+      from { opacity: 0.6; transform: scale(0.97); }
+      to { opacity: 1; transform: scale(1.03); }
+    }
+
+    .glowing-heart {
+      position: relative;
+      width: 95px;
+      height: 85px;
+      filter: drop-shadow(0 0 28px #e11d48);
+      animation: heartbeat 1.3s infinite ease-in-out;
+    }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      14% { transform: scale(1.16); }
+      28% { transform: scale(1); }
+      42% { transform: scale(1.16); }
+      70% { transform: scale(1); }
+    }
+
+    .glowing-heart::before,
+    .glowing-heart::after {
+      content: "";
+      position: absolute;
+      left: 48px;
+      top: 0;
+      width: 48px;
+      height: 78px;
+      background: linear-gradient(135deg, #f43f5e, #be123c 60%, #880825 100%);
+      border-radius: 48px 48px 0 0;
+      transform: rotate(-45deg);
+      transform-origin: 0 100%;
+    }
+
+    .glowing-heart::after {
+      left: 0;
+      transform: rotate(45deg);
+      transform-origin: 100% 100%;
+    }
+
+    /* Main Scene Container */
+    .scene-container {
+      position: relative;
+      width: 360px;
+      height: 520px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      visibility: hidden;
+      opacity: 0;
+      transform: scale(0.94);
+      transition: opacity 1.2s ease, transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 10;
+    }
+
+    .scene-container.active {
+      visibility: visible;
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* Flowers Bouquet Container */
+    .flowers-bundle {
+      position: absolute;
+      bottom: 85px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 340px;
+      height: 420px;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* Each Flower Unit */
+    .flower {
+      position: absolute;
+      bottom: 15px;
+      left: 50%;
+      transform-origin: bottom center;
+      transform: translateX(-50%) rotate(var(--angle, 0deg)) scale(0);
+      opacity: 0;
+      filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.45));
+    }
+
+    .scene-container.active .flower {
+      animation: flowerBloom 1.5s cubic-bezier(0.18, 0.89, 0.32, 1.25) forwards var(--delay, 0.2s);
+    }
+
+    @keyframes flowerBloom {
+      0% {
+        transform: translateX(-50%) rotate(var(--angle, 0deg)) scale(0);
+        opacity: 0;
+      }
+      65% {
+        transform: translateX(-50%) rotate(calc(var(--angle, 0deg) * 1.05)) scale(1.06);
+        opacity: 1;
+      }
+      100% {
+        transform: translateX(-50%) rotate(var(--angle, 0deg)) scale(1);
+        opacity: 1;
+      }
+    }
+
+    /* Natural Wind Sway */
+    .flower-swayer {
+      transform-origin: bottom center;
+      animation: naturalSway 4s ease-in-out infinite alternate;
+    }
+
+    .flower--1 .flower-swayer { animation-delay: -0.6s; animation-duration: 3.8s; }
+    .flower--2 .flower-swayer { animation-delay: -1.4s; animation-duration: 4.2s; }
+    .flower--3 .flower-swayer { animation-delay: -2.2s; animation-duration: 3.6s; }
+    .flower--4 .flower-swayer { animation-delay: -2.9s; animation-duration: 4.4s; }
+    .flower--5 .flower-swayer { animation-delay: -3.5s; animation-duration: 3.9s; }
+
+    @keyframes naturalSway {
+      0% { transform: rotate(-2deg); }
+      100% { transform: rotate(2.5deg); }
+    }
+
+    /* Flower Individual Placements */
+    .flower--1 {
+      --angle: -24deg;
+      --delay: 0.35s;
+      height: 290px;
+      z-index: 2;
+    }
+
+    .flower--2 {
+      --angle: -12deg;
+      --delay: 0.15s;
+      height: 340px;
+      z-index: 3;
+    }
+
+    .flower--3 {
+      --angle: 0deg;
+      --delay: 0s;
+      height: 380px;
+      z-index: 4;
+    }
+
+    .flower--4 {
+      --angle: 12deg;
+      --delay: 0.2s;
+      height: 340px;
+      z-index: 3;
+    }
+
+    .flower--5 {
+      --angle: 24deg;
+      --delay: 0.4s;
+      height: 290px;
+      z-index: 2;
+    }
+
+    /* Blooming Petal Expansion Keyframes */
+    .scene-container.active .petal-expand {
+      animation: petalUnfurl 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      transform-origin: 50% 65%;
+    }
+
+    @keyframes petalUnfurl {
+      0% {
+        transform: scale(0.65) translateY(12px);
+      }
+      100% {
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    /* Ambient Baby's Breath / Starlight sprigs */
+    .babys-breath {
+      position: absolute;
+      bottom: 70px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 280px;
+      height: 280px;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 1.4s ease 0.6s;
+    }
+
+    .scene-container.active .babys-breath {
+      opacity: 1;
+    }
+
+    /* Ambient Golden Fireflies / Sparkles */
+    .sparkle {
+      position: absolute;
+      width: 5px;
+      height: 5px;
+      background: radial-gradient(circle, #fff7ed 0%, #fde047 50%, rgba(253, 224, 71, 0) 100%);
+      border-radius: 50%;
+      box-shadow: 0 0 10px #fde047, 0 0 20px #eab308;
+      animation: floatSparkle 3s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+
+    @keyframes floatSparkle {
+      0% { transform: translateY(0) scale(0.5); opacity: 0.2; }
+      50% { opacity: 1; transform: translateY(-20px) scale(1.2); }
+      100% { transform: translateY(-40px) scale(0.4); opacity: 0; }
+    }
+
+    /* Florist Bouquet Paper Wrap */
+    .bouquet-wrap-container {
+      position: absolute;
+      bottom: 25px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 220px;
+      height: 250px;
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    /* Envelope Presentation */
+    .envelope-container {
+      position: absolute;
+      bottom: 80px;
+      width: 210px;
+      height: 135px;
+      background: linear-gradient(135deg, #fbcfe8, #f472b6);
+      border-radius: 8px;
+      z-index: 6;
+      cursor: pointer;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), 0 0 25px rgba(244, 114, 182, 0.4);
+      opacity: 0;
+      transform: translateY(40px) scale(0.85);
+      transition: all 0.9s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .envelope-container.show {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      animation: envelopeFloat 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes envelopeFloat {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-8px); }
+    }
+
+    .envelope-flap {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      border-left: 105px solid transparent;
+      border-right: 105px solid transparent;
+      border-top: 75px solid #ec4899;
+      transform-origin: top;
+      transition: transform 0.65s ease;
+      z-index: 8;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+    }
+
+    .envelope-container.open .envelope-flap {
+      transform: rotateX(180deg);
+    }
+
+    .envelope-seal {
+      position: absolute;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 32px;
+      height: 32px;
+      background: radial-gradient(circle at 35% 35%, #f43f5e, #be123c);
+      border-radius: 50%;
+      z-index: 9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-size: 15px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.35), 0 0 12px rgba(244, 63, 94, 0.6);
+      transition: opacity 0.3s;
+    }
+
+    .envelope-container.open .envelope-seal {
+      opacity: 0;
+    }
+
+    /* Popup Letter Modal Card */
+    .letter-card {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      width: 330px;
+      max-width: 90vw;
+      background: linear-gradient(145deg, #ffffff, #fff1f2);
+      color: #333333;
+      padding: 24px 20px 20px;
+      border-radius: 16px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(251, 113, 133, 0.35);
+      border: 1px solid rgba(251, 113, 133, 0.3);
+      z-index: 100;
+      text-align: center;
+      transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    .letter-card.active {
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .letter-card h3 {
+      font-size: 1.4rem;
+      font-family: 'Great Vibes', cursive;
+      margin-bottom: 6px;
+      color: #be123c;
+      letter-spacing: 1px;
+    }
+
+    .letter-card p {
+      font-size: 0.9rem;
+      line-height: 1.45;
+      color: #4b5563;
+      margin-bottom: 12px;
+    }
+
+    .letter-card img {
+      width: 140px;
+      height: auto;
+      margin: 8px 0 14px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .letter-footer {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #9f1239;
+      line-height: 1.4;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 14px;
+      font-size: 22px;
+      cursor: pointer;
+      color: #9ca3af;
+      transition: color 0.2s;
+    }
+
+    .close-btn:hover {
+      color: #e11d48;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient Starry Sky -->
+  <div class="stars" id="stars"></div>
+  <div class="moon"></div>
+
+  <!-- Ambient Drifting Petals -->
+  <div class="falling-petals-layer" id="fallingPetalsLayer"></div>
+
+  <!-- Header Title -->
+  <h1 class="title" id="mainTitle">Flowers For You</h1>
+
+  <!-- Initial Heart Tap Screen -->
+  <div class="heart-screen" id="heartScreen">
+    <div class="tap-text">TAP TO OPEN</div>
+    <div class="glowing-heart"></div>
+  </div>
+
+  <!-- Shared Global SVG Gradients & Filters for Botanical Realism -->
+  <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" aria-hidden="true">
+    <defs>
+      <!-- Drop Shadow for layered petals -->
+      <filter id="petal-shadow" x="-30%" y="-30%" width="160%" height="160%">
+        <feDropShadow dx="0" dy="3.5" stdDeviation="3" flood-color="#240008" flood-opacity="0.65"/>
+      </filter>
+      <filter id="leaf-shadow" x="-20%" y="-20%" width="140%" height="140%">
+        <feDropShadow dx="0" dy="2.5" stdDeviation="2.5" flood-color="#041f0b" flood-opacity="0.5"/>
+      </filter>
+
+      <!-- Classic Velvet Red Rose Gradients -->
+      <radialGradient id="rose-back-red" cx="50%" cy="40%" r="65%">
+        <stop offset="0%" stop-color="#be123c"/>
+        <stop offset="55%" stop-color="#880825"/>
+        <stop offset="100%" stop-color="#40000a"/>
+      </radialGradient>
+
+      <linearGradient id="rose-outer-l" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#fb7185"/>
+        <stop offset="30%" stop-color="#e11d48"/>
+        <stop offset="75%" stop-color="#9f1239"/>
+        <stop offset="100%" stop-color="#45010f"/>
+      </linearGradient>
+
+      <linearGradient id="rose-outer-r" x1="100%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#fb7185"/>
+        <stop offset="30%" stop-color="#e11d48"/>
+        <stop offset="75%" stop-color="#9f1239"/>
+        <stop offset="100%" stop-color="#45010f"/>
+      </linearGradient>
+
+      <radialGradient id="rose-bottom-red" cx="50%" cy="75%" r="70%">
+        <stop offset="0%" stop-color="#fb7185"/>
+        <stop offset="25%" stop-color="#e11d48"/>
+        <stop offset="70%" stop-color="#880825"/>
+        <stop offset="100%" stop-color="#3b0008"/>
+      </radialGradient>
+
+      <radialGradient id="rose-mid-red" cx="50%" cy="35%" r="70%">
+        <stop offset="0%" stop-color="#f43f5e"/>
+        <stop offset="45%" stop-color="#be123c"/>
+        <stop offset="85%" stop-color="#670318"/>
+        <stop offset="100%" stop-color="#300007"/>
+      </radialGradient>
+
+      <linearGradient id="rose-curl-red" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#ffe4e6"/>
+        <stop offset="45%" stop-color="#fda4af"/>
+        <stop offset="100%" stop-color="#e11d48"/>
+      </linearGradient>
+
+      <!-- Romantic Blush/Crimson Rose Gradients -->
+      <radialGradient id="rose-back-blush" cx="50%" cy="40%" r="65%">
+        <stop offset="0%" stop-color="#e11d48"/>
+        <stop offset="55%" stop-color="#9f1239"/>
+        <stop offset="100%" stop-color="#4c0519"/>
+      </radialGradient>
+
+      <linearGradient id="rose-outer-l-blush" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#fbcfe8"/>
+        <stop offset="30%" stop-color="#f43f5e"/>
+        <stop offset="75%" stop-color="#be123c"/>
+        <stop offset="100%" stop-color="#550012"/>
+      </linearGradient>
+
+      <linearGradient id="rose-outer-r-blush" x1="100%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#fbcfe8"/>
+        <stop offset="30%" stop-color="#f43f5e"/>
+        <stop offset="75%" stop-color="#be123c"/>
+        <stop offset="100%" stop-color="#550012"/>
+      </linearGradient>
+
+      <!-- Stem & Foliage Gradients -->
+      <linearGradient id="stem-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#1e5428"/>
+        <stop offset="35%" stop-color="#4ade80"/>
+        <stop offset="75%" stop-color="#166534"/>
+        <stop offset="100%" stop-color="#0f3d1b"/>
+      </linearGradient>
+
+      <linearGradient id="sepal-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#4ade80"/>
+        <stop offset="40%" stop-color="#15803d"/>
+        <stop offset="100%" stop-color="#052e16"/>
+      </linearGradient>
+
+      <radialGradient id="leaf-gradient" cx="30%" cy="30%" r="80%">
+        <stop offset="0%" stop-color="#4ade80"/>
+        <stop offset="45%" stop-color="#16a34a"/>
+        <stop offset="85%" stop-color="#14532d"/>
+        <stop offset="100%" stop-color="#052e16"/>
+      </radialGradient>
+    </defs>
+  </svg>
+
+  <!-- Main Animated Flower Scene -->
+  <div class="scene-container" id="sceneContainer">
+
+    <!-- Ambient Sparkles -->
+    <div class="sparkle" style="top: 80px; left: 40px; animation-delay: 0.2s;"></div>
+    <div class="sparkle" style="top: 60px; right: 50px; animation-delay: 1.1s;"></div>
+    <div class="sparkle" style="top: 130px; left: 80px; animation-delay: 1.8s;"></div>
+    <div class="sparkle" style="top: 110px; right: 80px; animation-delay: 0.7s;"></div>
+
+    <!-- Baby's Breath / Gypsophila Sprigs Background -->
+    <svg class="babys-breath" viewBox="0 0 280 280">
+      <g stroke="#86efac" stroke-width="1.2" stroke-linecap="round" opacity="0.6">
+        <path d="M 140,260 Q 120,180 85,120 M 100,150 Q 75,130 55,95 M 115,180 Q 90,165 70,140"/>
+        <path d="M 140,260 Q 160,180 195,120 M 180,150 Q 205,130 225,95 M 165,180 Q 190,165 210,140"/>
+      </g>
+      <!-- Tiny White Blossoms -->
+      <g fill="#ffffff" filter="drop-shadow(0 0 4px rgba(255,255,255,0.8))">
+        <circle cx="55" cy="95" r="3.2"/>
+        <circle cx="70" cy="140" r="2.8"/>
+        <circle cx="85" cy="120" r="3"/>
+        <circle cx="45" cy="110" r="2.6"/>
+        <circle cx="225" cy="95" r="3.2"/>
+        <circle cx="210" cy="140" r="2.8"/>
+        <circle cx="195" cy="120" r="3"/>
+        <circle cx="235" cy="110" r="2.6"/>
+      </g>
+      <g fill="#fde047">
+        <circle cx="55" cy="95" r="1.1"/>
+        <circle cx="70" cy="140" r="1"/>
+        <circle cx="85" cy="120" r="1"/>
+        <circle cx="225" cy="95" r="1.1"/>
+        <circle cx="210" cy="140" r="1"/>
+        <circle cx="195" cy="120" r="1"/>
+      </g>
+    </svg>
+
+    <!-- Flowers Bundle -->
+    <div class="flowers-bundle">
+
+      <!-- Flower 1: Outer Left -->
+      <div class="flower flower--1">
+        <div class="flower-swayer">
+          <svg viewBox="0 0 160 290" width="125" height="290">
+            <!-- Curved Stem -->
+            <path d="M 80,110 Q 75,190 80,290" stroke="url(#stem-gradient)" stroke-width="5" stroke-linecap="round" fill="none"/>
+            <path d="M 78,160 Q 70,163 66,168 Q 73,169 78,165 Z" fill="#14532d"/>
+            <!-- Leaf Left -->
+            <g transform="translate(76, 175) rotate(-35)" filter="url(#leaf-shadow)">
+              <path d="M 0,0 C -20,-12 -45,-8 -60,0 C -45,12 -20,14 0,0 Z" fill="url(#leaf-gradient)"/>
+              <path d="M 0,0 Q -30,0 -60,0" stroke="#86efac" stroke-width="1.2" fill="none" opacity="0.75"/>
+              <ellipse cx="-32" cy="-2" rx="2.5" ry="1.8" fill="rgba(255,255,255,0.4)"/>
+              <circle cx="-32.5" cy="-2.5" r="0.6" fill="#fff"/>
+            </g>
+            <!-- Calyx & Sepals -->
+            <g filter="url(#petal-shadow)">
+              <path d="M 68,105 C 50,115 32,128 22,146 C 36,134 58,122 72,112 Z" fill="url(#sepal-gradient)"/>
+              <path d="M 92,105 C 110,115 128,128 138,146 C 124,134 102,122 88,112 Z" fill="url(#sepal-gradient)"/>
+              <ellipse cx="80" cy="108" rx="10" ry="7" fill="url(#sepal-gradient)"/>
+            </g>
+            <!-- Blooming Rose Petals Head -->
+            <g class="petal-expand">
+              <!-- Outer Back -->
+              <path d="M 40,82 C 26,45 55,16 80,18 C 105,16 134,45 120,82 C 102,68 58,68 40,82 Z" fill="url(#rose-back-red)"/>
+              <path d="M 58,20 C 70,15 90,15 102,20 C 90,24 70,24 58,20 Z" fill="url(#rose-curl-red)" opacity="0.85"/>
+              <!-- Outer Left Petal -->
+              <path d="M 55,106 C 30,100 10,80 13,54 C 15,35 40,33 55,48 C 45,68 50,92 55,106 Z" fill="url(#rose-outer-l)" filter="url(#petal-shadow)"/>
+              <path d="M 13,54 C 17,39 38,39 52,48 C 39,45 22,47 13,54 Z" fill="url(#rose-curl-red)" opacity="0.9"/>
+              <!-- Outer Right Petal -->
+              <path d="M 105,106 C 130,100 150,80 147,54 C 145,35 120,33 105,48 C 115,68 110,92 105,106 Z" fill="url(#rose-outer-r)" filter="url(#petal-shadow)"/>
+              <path d="M 147,54 C 143,39 122,39 108,48 C 121,45 138,47 147,54 Z" fill="url(#rose-curl-red)" opacity="0.9"/>
+              <!-- Outer Drooping Bottom Petal -->
+              <path d="M 44,98 C 38,124 62,136 80,136 C 98,136 122,124 116,98 C 98,112 62,112 44,98 Z" fill="url(#rose-bottom-red)" filter="url(#petal-shadow)"/>
+              <path d="M 58,128 C 70,135 90,135 102,128 C 92,131 68,131 58,128 Z" fill="url(#rose-curl-red)" opacity="0.85"/>
+              <!-- Mid Cupping Petals -->
+              <path d="M 50,95 C 38,78 38,52 62,44 C 74,40 84,50 80,70 C 70,84 60,92 50,95 Z" fill="url(#rose-mid-red)" filter="url(#petal-shadow)"/>
+              <path d="M 110,95 C 122,78 122,52 98,44 C 86,40 76,50 80,70 C 90,84 100,92 110,95 Z" fill="url(#rose-mid-red)" filter="url(#petal-shadow)"/>
+              <!-- Mid Front Petal -->
+              <path d="M 54,92 C 54,110 65,120 80,120 C 95,120 106,110 106,92 C 95,104 65,104 54,92 Z" fill="url(#rose-bottom-red)" filter="url(#petal-shadow)"/>
+              <!-- Inner Bud Heart -->
+              <path d="M 60,82 C 54,66 60,52 72,49 C 84,46 92,54 90,68 C 80,80 68,82 60,82 Z" fill="url(#rose-mid-red)"/>
+              <path d="M 100,82 C 106,66 100,52 88,49 C 76,46 68,54 70,68 C 80,80 92,82 100,82 Z" fill="url(#rose-mid-red)"/>
+              <path d="M 68,72 C 67,61 74,55 81,55 C 89,55 92,62 89,70 C 84,76 73,76 68,72 Z" fill="url(#rose-outer-l)"/>
+              <!-- Center Void Shadow -->
+              <ellipse cx="79" cy="64" rx="4" ry="2.8" fill="#200005"/>
+              <!-- Dewdrop -->
+              <ellipse cx="38" cy="74" rx="2.8" ry="2" fill="rgba(255,255,255,0.3)" stroke="rgba(255,255,255,0.8)" stroke-width="0.4"/>
+              <circle cx="37.3" cy="73.3" r="0.6" fill="#fff"/>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Flower 2: Mid Left (Soft Blush Pink & Crimson) -->
+      <div class="flower flower--2">
+        <div class="flower-swayer">
+          <svg viewBox="0 0 160 340" width="135" height="340">
+            <!-- Stem -->
+            <path d="M 80,110 Q 84,210 80,340" stroke="url(#stem-gradient)" stroke-width="5.5" stroke-linecap="round" fill="none"/>
+            <path d="M 82,190 Q 90,193 94,198 Q 87,199 82,195 Z" fill="#14532d"/>
+            <!-- Leaf Right -->
+            <g transform="translate(84, 160) rotate(30)" filter="url(#leaf-shadow)">
+              <path d="M 0,0 C 20,-12 48,-8 64,0 C 48,12 20,14 0,0 Z" fill="url(#leaf-gradient)"/>
+              <path d="M 0,0 Q 32,0 64,0" stroke="#86efac" stroke-width="1.2" fill="none" opacity="0.75"/>
+              <ellipse cx="32" cy="-2" rx="2.5" ry="1.8" fill="rgba(255,255,255,0.4)"/>
+              <circle cx="31.5" cy="-2.5" r="0.6" fill="#fff"/>
+            </g>
+            <!-- Calyx & Sepals -->
+            <g filter="url(#petal-shadow)">
+              <path d="M 68,105 C 50,115 32,128 22,146 C 36,134 58,122 72,112 Z" fill="url(#sepal-gradient)"/>
+              <path d="M 92,105 C 110,115 128,128 138,146 C 124,134 102,122 88,112 Z" fill="url(#sepal-gradient)"/>
+              <ellipse cx="80" cy="108" rx="10" ry="7" fill="url(#sepal-gradient)"/>
+            </g>
+            <!-- Rose Petals -->
+            <g class="petal-expand">
+              <path d="M 38,82 C 24,45 54,16 80,18 C 106,16 136,45 122,82 C 104,68 56,68 38,82 Z" fill="url(#rose-back-blush)"/>
+              <path d="M 56,20 C 68,15 92,15 104,20 C 92,24 68,24 56,20 Z" fill="url(#rose-curl-red)" opacity="0.9"/>
+              <path d="M 54,106 C 28,100 8,80 11,54 C 13,35 38,33 54,48 C 44,68 49,92 54,106 Z" fill="url(#rose-outer-l-blush)" filter="url(#petal-shadow)"/>
+              <path d="M 11,54 C 15,39 37,39 51,48 C 38,45 20,47 11,54 Z" fill="url(#rose-curl-red)" opacity="0.95"/>
+              <path d="M 106,106 C 132,100 152,80 149,54 C 147,35 122,33 106,48 C 116,68 111,92 106,106 Z" fill="url(#rose-outer-r-blush)" filter="url(#petal-shadow)"/>
+              <path d="M 149,54 C 145,39 123,39 109,48 C 122,45 140,47 149,54 Z" fill="url(#rose-curl-red)" opacity="0.95"/>
+              <path d="M 42,98 C 36,124 60,136 80,136 C 100,136 124,124 118,98 C 100,112 60,112 42,98 Z" fill="url(#rose-bottom-red)" filter="url(#petal-shadow)"/>
+              <path d="M 56,128 C 68,135 92,135 104,128 C 94,131 66,131 56,128 Z" fill="url(#rose-curl-red)" opacity="0.9"/>
+              <path d="M 48,95 C 36,78 36,52 60,44 C 72,40 82,50 78,70 C 68,84 58,92 48,95 Z" fill="url(#rose-mid-red)" filter="url(#petal-shadow)"/>
+              <path d="M 112,95 C 124,78 124,52 100,44 C 88,40 78,50 82,70 C 92,84 102,92 112,95 Z" fill="url(#rose-mid-red)" filter="url(#petal-shadow)"/>
+              <path d="M 52,92 C 52,110 63,120 80,120 C 97,120 108,110 108,92 C 97,104 63,104 52,92 Z" fill="url(#rose-bottom-red)" filter="url(#petal-shadow)"/>
+              <path d="M 58,82 C 52,66 58,52 70,49 C 82,46 90,54 88,68 C 78,80 66,82 58,82 Z" fill="url(#rose-mid-red)"/>
+              <path d="M 102,82 C 108,66 102,52 90,49 C 78,46 70,54 72,68 C 82,80 94,82 102,82 Z" fill="url(#rose-mid-red)"/>
+              <path d="M 67,72 C 66,61 73,55 80,55 C 88,55 91,62 88,70 C 83,76 72,76 67,72 Z" fill="url(#rose-outer-l-blush)"/>
+              <ellipse cx="79" cy="64" rx="4" ry="2.8" fill="#200005"/>
+              <!-- Dewdrops -->
+              <ellipse cx="125" cy="85" rx="3" ry="2.2" fill="rgba(255,255,255,0.35)" stroke="rgba(255,255,255,0.85)" stroke-width="0.4"/>
+              <circle cx="124.3" cy="84.2" r="0.7" fill="#fff"/>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Flower 3: Center (Tallest, Grand Velvet Red Rose) -->
+      <div class="flower flower--3">
+        <div class="flower-swayer">
+          <svg viewBox="0 0 180 380" width="150" height="380">
+            <!-- Stem -->
+            <path d="M 90,125 Q 88,230 90,380" stroke="url(#stem-gradient)" stroke-width="6" stroke-linecap="round" fill="none"/>
+            <path d="M 87,175 Q 78,178 74,184 Q 82,185 87,181 Z" fill="#14532d"/>
+            <path d="M 93,240 Q 102,243 106,249 Q 99,250 93,246 Z" fill="#14532d"/>
+            <!-- Dual Leaves -->
+            <g transform="translate(86, 215) rotate(-35)" filter="url(#leaf-shadow)">
+              <path d="M 0,0 C -22,-14 -50,-10 -68,0 C -50,14 -22,16 0,0 Z" fill="url(#leaf-gradient)"/>
+              <path d="M 0,0 Q -34,0 -68,0" stroke="#86efac" stroke-width="1.3" fill="none" opacity="0.8"/>
+              <ellipse cx="-35" cy="-2.5" rx="3" ry="2" fill="rgba(255,255,255,0.4)"/>
+              <circle cx="-35.6" cy="-3.1" r="0.7" fill="#fff"/>
+            </g>
+            <g transform="translate(94, 195) rotate(35)" filter="url(#leaf-shadow)">
+              <path d="M 0,0 C 22,-14 50,-10 68,0 C 50,14 22,16 0,0 Z" fill="url(#leaf-gradient)"/>
+              <path d="M 0,0 Q 34,0 68,0" stroke="#86efac" stroke-width="1.3" fill="none" opacity="0.8"/>
+            </g>
+            <!-- Sepals & Calyx -->
+            <g filter="url(#petal-shadow)">
+              <path d="M 76,120 C 56,130 34,146 22,166 C 38,152 64,138 80,128 Z" fill="url(#sepal-gradient)"/>
+              <path d="M 104,120 C 124,130 146,146 158,166 C 142,152 116,138 100,128 Z" fill="url(#sepal-gradient)"/>
+              <path d="M 88,124 C 84,142 82,164 86,182 C 93,164 96,142 94,124 Z" fill="url(#sepal-gradient)"/>
+              <ellipse cx="90" cy="123" rx="12" ry="8" fill="url(#sepal-gradient)"/>
+            </g>
+            <!-- Grand Blooming Rose Head -->
+            <g class="petal-expand">
+              <!-- Outer Back -->
+              <path d="M 44,92 C 28,50 62,18 90,20 C 118,18 152,50 136,92 C 116,76 64,76 44,92 Z" fill="url(#rose-back-red)"/>
+              <path d="M 64,22 C 78,16 102,16 116,22 C 102,27 78,27 64,22 Z" fill="url(#rose-curl-red)" opacity="0.85"/>
+              <!-- Flanking Guard Petals -->
+              <path d="M 62,118 C 32,112 10,90 13,60 C 16,39 44,37 62,53 C 50,76 56,102 62,118 Z" fill="url(#rose-outer-l)" filter="url(#petal-shadow)"/>
+              <path d="M 13,60 C 17,43 42,43 58,53 C 44,50 24,52 13,60 Z" fill="url(#rose-curl-red)" opacity="0.9"/>
+              <path d="M 118,118 C 148,112 170,90 167,60 C 164,39 136,37 118,53 C 130,76 124,102 118,118 Z" fill="url(#rose-outer-r)" filter="url(#petal-shadow)"/>
+              <path d="M 167,60 C 163,43 138,43 122,53 C 136,50 156,52 167,60 Z" fill="url(#rose-curl-red)" opacity="0.9"/>
+              <!-- Drooping Forward Outer Petal -->
+              <path d="M 48,110 C 42,140 68,154 90,154 C 112,154 138,140 132,110 C 112,126 68,126 48,110 Z" fill="url(#rose-bottom-red)" filter="url(#petal-shadow)"/>
+              <path d="M 64,144 C 78,152 102,152 116,144 C 104,148 76,148 64,144 Z" fill="url(#rose-curl-red)" opacity="0.85"/>
+              <!-- Mid Tier Petals -->
+              <path d="M 56,106 C 42,86 42,56 70,48 C 84,43 94,54 90,78 C 78,94 68,102 56,106 Z" fill="url(#rose-mid-red)" filter="url(#petal-shadow)"/>
+              <path d="M 124,106 C 138,86 138,56 110,48 C 96,43 86,54 90,78 C 102,94 112,102 124,106 Z" fill="url(#rose-mid-red)" filter="url(#petal-shadow)"/>
+              <!-- Mid Front Petal -->
+              <path d="M 60,102 C 60,124 72,136 90,136 C 108,136 120,124 120,102 C 108,116 72,116 60,102 Z" fill="url(#rose-bottom-red)" filter="url(#petal-shadow)"/>
+              <path d="M 74,128 C 84,134 96,134 106,128 C 98,131 82,131 74,128 Z" fill="url(#rose-curl-red)" opacity="0.85"/>
+              <!-- Inner Bud Core -->
+              <path d="M 66,92 C 60,74 66,58 80,54 C 94,51 104,60 100,76 C 90,90 76,92 66,92 Z" fill="url(#rose-mid-red)"/>
+              <path d="M 114,92 C 120,74 114,58 100,54 C 86,51 76,60 80,76 C 90,90 104,92 114,92 Z" fill="url(#rose-mid-red)"/>
+              <path d="M 75,81 C 74,68 82,62 90,62 C 98,62 102,70 99,79 C 93,86 81,86 75,81 Z" fill="url(#rose-outer-l)"/>
+              <path d="M 78,74 C 78,67 83,64 89,64 C 95,64 97,69 94,74 C 91,77 84,77 78,74 Z" fill="url(#rose-curl-red)"/>
+              <!-- Deep Crevice Void -->
+              <ellipse cx="89" cy="72" rx="4.5" ry="3.2" fill="#1e0004"/>
+              <!-- Sparkling Dewdrops -->
+              <ellipse cx="40" cy="85" rx="3.5" ry="2.5" fill="rgba(255,255,255,0.3)" stroke="rgba(255,255,255,0.85)" stroke-width="0.5"/>
+              <circle cx="39" cy="84" r="0.8" fill="#ffffff"/>
+              <ellipse cx="98" cy="142" rx="3.8" ry="2.6" fill="rgba(255,255,255,0.3)" stroke="rgba(255,255,255,0.85)" stroke-width="0.5"/>
+              <circle cx="97" cy="141" r="0.8" fill="#ffffff"/>
+              <ellipse cx="140" cy="90" rx="3" ry="2" fill="rgba(255,255,255,0.3)" stroke="rgba(255,255,255,0.8)" stroke-width="0.4"/>
+              <circle cx="139.2" cy="89.3" r="0.6" fill="#fff"/>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Flower 4: Mid Right (Warm Crimson & Blush Rose) -->
+      <div class="flower flower--4">
+        <div class="flower-swayer">
+          <svg viewBox="0 0 160 340" width="135" height="340">
+            <!-- Stem -->
+            <path d="M 80,110 Q 76,210 80,340" stroke="url(#stem-gradient)" stroke-width="5.5" stroke-linecap="round" fill="none"/>
+            <path d="M 78,190 Q 70,193 66,198 Q 73,199 78,195 Z" fill="#14532d"/>
+            <!-- Leaf Left -->
+            <g transform="translate(76, 160) rotate(-30)" filter="url(#leaf-shadow)">
+              <path d="M 0,0 C -20,-12 -48,-8 -64,0 C -48,12 -20,14 0,0 Z" fill="url(#leaf-gradient)"/>
+              <path d="M 0,0 Q -32,0 -64,0" stroke="#86efac" stroke-width="1.2" fill="none" opacity="0.75"/>
+              <ellipse cx="-32" cy="-2" rx="2.5" ry="1.8" fill="rgba(255,255,255,0.4)"/>
+              <circle cx="-32.5" cy="-2.5" r="0.6" fill="#fff"/>
+            </g>
+            <!-- Calyx & Sepals -->
+            <g filter="url(#petal-shadow)">
+              <path d="M 68,105 C 50,115 32,128 22,146 C 36,134 58,122 72,112 Z" fill="url(#sepal-gradient)"/>
+              <path d="M 92,105 C 110,115 128,128 138,146 C 124,134 102,122 88,112 Z" fill="url(#sepal-gradient)"/>
+              <ellipse cx="80" cy="108" rx="10" ry="7" fill="url(#sepal-gradient)"/>
+            </g>
+            <!-- Rose Petals -->
+            <g class="petal-expand">
+              <path d="M 38,82 C 24,45 54,16 80,18 C 106,16 136,45 122,82 C 104,68 56,68 38,82 Z" fill="url(#rose-back-red)"/>
+              <path d="M 56,20 C 68,15 92,15 104,20 C 92,24 68,24 56,20 Z" fill="url(#rose-curl-red)" opacity="0.9"/>
+              <path d="M 54,106 C 28,100 8,80 11,54 C 13,35 38,33 54,48 C 44,68 49,92 54,106 Z" fill="url(#rose-outer-l)" filter="url(#petal-shadow)"/>
+              <path d="M 11,54 C 15,39 37,39 51,48 C 38,45 20,47 11,54 Z" fill="url(#rose-curl-red)" opacity="0.95"/>
+              <path d="M 106,106 C 132,100 152,80 149,54 C 147,35 122,33 106,48 C 116,68 111,92 106,106 Z" fill="url(#rose-outer-r)" filter="url(#petal-shadow)"/>
+              <path d="M 149,54 C 145,39 123,39 109,48 C 122,45 140,47 149,54 Z" fill="url(#rose-curl-red)" opacity="0.95"/>
+              <path d="M 42,98 C 36,124 60,136 80,136 C 100,136 124,124 118,98 C 100,112 60,112 42,98 Z" fill="url(#rose-bottom-red)" filter="url(#petal-shadow)"/>
+              <path d="M 56,128 C 68,135 92,135 104,128 C 94,131 66,131 56,128 Z" fill="url(#rose-curl-red)" opacity="0.9"/>
+              <path d="M 48,95 C 36,78 36,52 60,44 C 72,40 82,50 78,70 C 68,84 58,92 48,95 Z" fill="url(#rose-mid-red)" filter="url(#petal-shadow)"/>
+              <path d="M 112,95 C 124,78 124,52 100,44 C 88,40 78,50 82,70 C 92,84 102,92 112,95 Z" fill="url(#rose-mid-red)" filter="url(#petal-shadow)"/>
+              <path d="M 52,92 C 52,110 63,120 80,120 C 97,120 108,110 108,92 C 97,104 63,104 52,92 Z" fill="url(#rose-bottom-red)" filter="url(#petal-shadow)"/>
+              <path d="M 58,82 C 52,66 58,52 70,49 C 82,46 90,54 88,68 C 78,80 66,82 58,82 Z" fill="url(#rose-mid-red)"/>
+              <path d="M 102,82 C 108,66 102,52 90,49 C 78,46 70,54 72,68 C 82,80 94,82 102,82 Z" fill="url(#rose-mid-red)"/>
+              <path d="M 67,72 C 66,61 73,55 80,55 C 88,55 91,62 88,70 C 83,76 72,76 67,72 Z" fill="url(#rose-outer-l)"/>
+              <ellipse cx="79" cy="64" rx="4" ry="2.8" fill="#200005"/>
+              <!-- Dewdrop -->
+              <ellipse cx="35" cy="85" rx="3" ry="2.2" fill="rgba(255,255,255,0.35)" stroke="rgba(255,255,255,0.85)" stroke-width="0.4"/>
+              <circle cx="34.3" cy="84.2" r="0.7" fill="#fff"/>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Flower 5: Outer Right -->
+      <div class="flower flower--5">
+        <div class="flower-swayer">
+          <svg viewBox="0 0 160 290" width="125" height="290">
+            <!-- Stem -->
+            <path d="M 80,110 Q 85,190 80,290" stroke="url(#stem-gradient)" stroke-width="5" stroke-linecap="round" fill="none"/>
+            <path d="M 82,160 Q 90,163 94,168 Q 87,169 82,165 Z" fill="#14532d"/>
+            <!-- Leaf Right -->
+            <g transform="translate(84, 175) rotate(35)" filter="url(#leaf-shadow)">
+              <path d="M 0,0 C 20,-12 45,-8 60,0 C 45,12 20,14 0,0 Z" fill="url(#leaf-gradient)"/>
+              <path d="M 0,0 Q 30,0 60,0" stroke="#86efac" stroke-width="1.2" fill="none" opacity="0.75"/>
+              <ellipse cx="32" cy="-2" rx="2.5" ry="1.8" fill="rgba(255,255,255,0.4)"/>
+              <circle cx="31.5" cy="-2.5" r="0.6" fill="#fff"/>
+            </g>
+            <!-- Calyx & Sepals -->
+            <g filter="url(#petal-shadow)">
+              <path d="M 68,105 C 50,115 32,128 22,146 C 36,134 58,122 72,112 Z" fill="url(#sepal-gradient)"/>
+              <path d="M 92,105 C 110,115 128,128 138,146 C 124,134 102,122 88,112 Z" fill="url(#sepal-gradient)"/>
+              <ellipse cx="80" cy="108" rx="10" ry="7" fill="url(#sepal-gradient)"/>
+            </g>
+            <!-- Blooming Rose Petals Head -->
+            <g class="petal-expand">
+              <path d="M 40,82 C 26,45 55,16 80,18 C 105,16 134,45 120,82 C 102,68 58,68 40,82 Z" fill="url(#rose-back-red)"/>
+              <path d="M 58,20 C 70,15 90,15 102,20 C 90,24 70,24 58,20 Z" fill="url(#rose-curl-red)" opacity="0.85"/>
+              <path d="M 55,106 C 30,100 10,80 13,54 C 15,35 40,33 55,48 C 45,68 50,92 55,106 Z" fill="url(#rose-outer-l)" filter="url(#petal-shadow)"/>
+              <path d="M 13,54 C 17,39 38,39 52,48 C 39,45 22,47 13,54 Z" fill="url(#rose-curl-red)" opacity="0.9"/>
+              <path d="M 105,106 C 130,100 150,80 147,54 C 145,35 120,33 105,48 C 115,68 110,92 105,106 Z" fill="url(#rose-outer-r)" filter="url(#petal-shadow)"/>
+              <path d="M 147,54 C 143,39 122,39 108,48 C 121,45 138,47 147,54 Z" fill="url(#rose-curl-red)" opacity="0.9"/>
+              <path d="M 44,98 C 38,124 62,136 80,136 C 98,136 122,124 116,98 C 98,112 62,112 44,98 Z" fill="url(#rose-bottom-red)" filter="url(#petal-shadow)"/>
+              <path d="M 58,128 C 70,135 90,135 102,128 C 92,131 68,131 58,128 Z" fill="url(#rose-curl-red)" opacity="0.85"/>
+              <path d="M 50,95 C 38,78 38,52 62,44 C 74,40 84,50 80,70 C 70,84 60,92 50,95 Z" fill="url(#rose-mid-red)" filter="url(#petal-shadow)"/>
+              <path d="M 110,95 C 122,78 122,52 98,44 C 86,40 76,50 80,70 C 90,84 100,92 110,95 Z" fill="url(#rose-mid-red)" filter="url(#petal-shadow)"/>
+              <path d="M 54,92 C 54,110 65,120 80,120 C 95,120 106,110 106,92 C 95,104 65,104 54,92 Z" fill="url(#rose-bottom-red)" filter="url(#petal-shadow)"/>
+              <path d="M 60,82 C 54,66 60,52 72,49 C 84,46 92,54 90,68 C 80,80 68,82 60,82 Z" fill="url(#rose-mid-red)"/>
+              <path d="M 100,82 C 106,66 100,52 88,49 C 76,46 68,54 70,68 C 80,80 92,82 100,82 Z" fill="url(#rose-mid-red)"/>
+              <path d="M 68,72 C 67,61 74,55 81,55 C 89,55 92,62 89,70 C 84,76 73,76 68,72 Z" fill="url(#rose-outer-l)"/>
+              <ellipse cx="79" cy="64" rx="4" ry="2.8" fill="#200005"/>
+              <!-- Dewdrop -->
+              <ellipse cx="122" cy="74" rx="2.8" ry="2" fill="rgba(255,255,255,0.3)" stroke="rgba(255,255,255,0.8)" stroke-width="0.4"/>
+              <circle cx="121.3" cy="73.3" r="0.6" fill="#fff"/>
+            </g>
+          </svg>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Florist Bouquet Kraft Paper Wrap & Satin Ribbon -->
+    <div class="bouquet-wrap-container">
+      <svg viewBox="0 0 220 250" width="100%" height="100%">
+        <defs>
+          <linearGradient id="kraft-back" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#701a2e"/>
+            <stop offset="50%" stop-color="#4a0e1c"/>
+            <stop offset="100%" stop-color="#2a050d"/>
+          </linearGradient>
+          <linearGradient id="kraft-front-l" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#881337"/>
+            <stop offset="70%" stop-color="#4c0519"/>
+            <stop offset="100%" stop-color="#26020c"/>
+          </linearGradient>
+          <linearGradient id="kraft-front-r" x1="100%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#9f1239"/>
+            <stop offset="70%" stop-color="#550012"/>
+            <stop offset="100%" stop-color="#2a0007"/>
+          </linearGradient>
+          <linearGradient id="ribbon-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#f43f5e"/>
+            <stop offset="50%" stop-color="#fda4af"/>
+            <stop offset="100%" stop-color="#e11d48"/>
+          </linearGradient>
+          <filter id="wrap-shadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#000000" flood-opacity="0.6"/>
+          </filter>
+        </defs>
+
+        <!-- Back Paper Cone -->
+        <polygon points="10,40 210,40 145,245 75,245" fill="url(#kraft-back)" filter="url(#wrap-shadow)"/>
+        <!-- Folded Left Flap -->
+        <polygon points="10,40 140,170 120,245 75,245" fill="url(#kraft-front-l)"/>
+        <!-- Folded Right Flap -->
+        <polygon points="210,40 80,170 100,245 145,245" fill="url(#kraft-front-r)" filter="url(#wrap-shadow)"/>
+
+        <!-- Satin Ribbon Tie -->
+        <rect x="68" y="165" width="84" height="20" rx="4" fill="url(#ribbon-grad)" filter="url(#wrap-shadow)"/>
+        <!-- Bow Loops -->
+        <ellipse cx="94" cy="175" rx="14" ry="9" fill="url(#ribbon-grad)"/>
+        <ellipse cx="126" cy="175" rx="14" ry="9" fill="url(#ribbon-grad)"/>
+        <!-- Bow Center Knot & Heart Pin -->
+        <circle cx="110" cy="175" r="7" fill="#be123c"/>
+        <text x="110" y="179" font-size="10" fill="#ffffff" text-anchor="middle" font-weight="bold">♥</text>
+        <!-- Ribbon Tails -->
+        <path d="M 104,180 Q 96,205 92,225" stroke="url(#ribbon-grad)" stroke-width="6" stroke-linecap="round" fill="none"/>
+        <path d="M 116,180 Q 124,205 128,225" stroke="url(#ribbon-grad)" stroke-width="6" stroke-linecap="round" fill="none"/>
+      </svg>
+    </div>
+
+    <!-- Envelope Trigger -->
+    <div class="envelope-container" id="envelope">
+      <div class="envelope-flap"></div>
+      <div class="envelope-seal">♥</div>
+    </div>
+
+  </div>
+
+  <!-- Popup Love Letter Modal Card -->
+  <div class="letter-card" id="letterCard">
+    <span class="close-btn" id="closeBtn">&times;</span>
+    <h3>Dear Love</h3>
+    <p>Today is not a special day, but for me it is a unique day.</p>
+    <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdWp3MHU3Y3E3Ynk1bnZwOHI4Z3I1a243aWV2ZWV2ZWV2ZWV2ZWV2JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZF9jdXQmY3Q9cw/MDJ9IbxxvDUQM/giphy.gif" alt="Cute bears hugging">
+    <div class="letter-footer">I like you just the way you are. Happy month.</div>
+  </div>
+
+  <script>
+    // 1. Generate Ambient Stars
+    const starsContainer = document.getElementById('stars');
+    for (let i = 0; i < 75; i++) {
+      const star = document.createElement('div');
+      star.className = 'star';
+      const size = Math.random() * 2.8 + 1;
+      star.style.width = `${size}px`;
+      star.style.height = `${size}px`;
+      star.style.left = `${Math.random() * 100}%`;
+      star.style.top = `${Math.random() * 100}%`;
+      star.style.setProperty('--duration', `${Math.random() * 3 + 2}s`);
+      star.style.animationDelay = `${Math.random() * 3}s`;
+      starsContainer.appendChild(star);
+    }
+
+    // 2. Generate Ambient Falling Rose Petals
+    const fallingLayer = document.getElementById('fallingPetalsLayer');
+    function createFallingPetal() {
+      const petal = document.createElement('div');
+      petal.className = 'drifting-petal';
+      petal.style.left = `${Math.random() * 100}%`;
+      const duration = Math.random() * 5 + 6;
+      petal.style.setProperty('--fall-duration', `${duration}s`);
+      petal.style.setProperty('--drift-x', `${(Math.random() - 0.5) * 120}px`);
+      const scale = Math.random() * 0.5 + 0.7;
+      petal.style.transform = `scale(${scale})`;
+      fallingLayer.appendChild(petal);
+
+      setTimeout(() => {
+        petal.remove();
+      }, duration * 1000);
+    }
+
+    // Periodically spawn gentle falling petals
+    setInterval(createFallingPetal, 1400);
+    for (let i = 0; i < 4; i++) {
+      setTimeout(createFallingPetal, i * 400);
+    }
+
+    // 3. Elements & Interactions
+    const heartScreen = document.getElementById('heartScreen');
+    const sceneContainer = document.getElementById('sceneContainer');
+    const mainTitle = document.getElementById('mainTitle');
+    const envelope = document.getElementById('envelope');
+    const letterCard = document.getElementById('letterCard');
+    const closeBtn = document.getElementById('closeBtn');
+
+    // Click "Tap to Open"
+    heartScreen.addEventListener('click', () => {
+      heartScreen.style.opacity = '0';
+      heartScreen.style.transform = 'scale(0.85)';
+
+      setTimeout(() => {
+        heartScreen.style.display = 'none';
+        sceneContainer.classList.add('active');
+        mainTitle.classList.add('show');
+
+        // Reveal the floating love envelope
+        setTimeout(() => {
+          envelope.classList.add('show');
+        }, 1600);
+      }, 700);
+    });
+
+    // Click Envelope to Open Letter
+    envelope.addEventListener('click', () => {
+      envelope.classList.add('open');
+      setTimeout(() => {
+        letterCard.classList.add('active');
+      }, 550);
+    });
+
+    // Close Letter Card
+    closeBtn.addEventListener('click', () => {
+      letterCard.classList.remove('active');
+    });
+
+    // Tap/Click anywhere to sprinkle fluttering rose petals
+    window.addEventListener('pointerdown', (e) => {
+      // Don't trigger when clicking modal or envelope
+      if (e.target.closest('#letterCard') || e.target.closest('#envelope')) return;
+
+      for (let i = 0; i < 4; i++) {
+        const petal = document.createElement('div');
+        petal.className = 'drifting-petal';
+        petal.style.left = `${e.clientX + (Math.random() - 0.5) * 60}px`;
+        petal.style.top = `${e.clientY + (Math.random() - 0.5) * 40}px`;
+        const dur = Math.random() * 3 + 3.5;
+        petal.style.setProperty('--fall-duration', `${dur}s`);
+        petal.style.setProperty('--drift-x', `${(Math.random() - 0.5) * 160}px`);
+        fallingLayer.appendChild(petal);
+
+        setTimeout(() => {
+          petal.remove();
+        }, dur * 1000);
+      }
+    });
+  </script>
+</body>
+</html>
